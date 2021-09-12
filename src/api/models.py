@@ -19,3 +19,6 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+
+    def check_password(self, password_param):
+        return safe_str_cmp(self.password.encode('utf-8'),password_param.encode('utf-8'))

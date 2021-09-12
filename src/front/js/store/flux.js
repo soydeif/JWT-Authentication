@@ -1,3 +1,4 @@
+import { api_url } from "../back";
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -13,11 +14,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			user: null,
+			accesToken: null
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
+			example_function: () => {
 				getActions().changeColor(0, "green");
 			},
 
@@ -28,7 +31,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ message: data.message }))
 					.catch(error => console.log("Error loading message from backend", error));
 			},
-			changeColor: (index, color) => {
+			change_color: (index, color) => {
 				//get the store
 				const store = getStore();
 
@@ -41,6 +44,49 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+			signin_user: paramsForm => {
+				const raw = JSON.stringify(paramsForm);
+
+				const requestPost = {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: raw
+				};
+
+				fetch(api_url + "/api/login", requestPost)
+					.then(response => response.json())
+					.then(result => {
+						setStore({ accesToken: result["access_token"], user: result });
+						const store = getStore();
+						console.log(store.user);
+					})
+					.catch(error => console.log("Error", error));
+			},
+			user_authentic: () => {
+				const store = getStore();
+				return store.accesToken !== null;
+			},
+			register: paramsForm => {
+				const raw = JSON.stringify(paramsForm);
+
+				const requestPost = {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: raw
+				};
+
+				fetch(api_url + "/api/signup", requestPost)
+					.then(response => response.json())
+					.then(result => {
+						console.log("done");
+					})
+					.catch(error => console.log("Error", error));
+			},
+			log_out: () => {
+				const store = getStore();
+				store.user = null;
+				store.accesToken = null;
 			}
 		}
 	};
