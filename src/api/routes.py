@@ -52,7 +52,7 @@ def sign_in_user():
     return jsonify({"access_token":  access_token, "user": user.serialize()}), 200
 
 @api.route("home", methods=["GET", "PUT"])
-@jwt_required()
+
 def user_profile():
     identity = get_jwt_identity()
     user = current_user(get_jwt_identity())
